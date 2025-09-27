@@ -7,7 +7,7 @@ const userSchema = new mongoose.Schema(
     password: { type: String, required: true },
     lastLogin: { type: Date, default: Date.now },
     isVerified: { type: Boolean, default: false },
-    resetPasswordCode: { type: String, default: null },
+    resetPasswordToken: { type: String, default: null },
     resetPasswordExpiresAt: { type: Date, default: null },
     verificationCode: { type: String, default: null },
     verificationCodeExpiresAt: { type: Date, default: null },
