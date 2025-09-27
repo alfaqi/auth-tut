@@ -9,19 +9,34 @@ export const generateVerificationCode = () =>
   Math.floor(100000 + Math.random() * 900000).toString();
 
 /**
- * Generates an expiry date object from the current time.
- * The expiry date is calculated by adding the specified number of minutes
- * to the current time. If no number of minutes is specified, the expiry
- * date defaults to an hour from the current time.
+ * Generates a Date object representing the current time plus the given number of minutes.
+ * This function is useful for generating expiration dates for tokens, etc.
  * @param {number} [minutes=60] The number of minutes to add to the current time.
- * @returns {number} The expiry date object from the current time.
+ * @returns {Date} The expiration date.
  */
 export const generateExpiryDate = (minutes = 60) =>
-  Date.now() + minutes * 60 * 1000;
+  new Date(Date.now() + minutes * 60 * 1000);
 
+/**
+ * Generates a reset password token as a string.
+ * The token is a random number between 100000 and 999999.
+ * @returns {string} The reset password token.
+ */
 export const generateResetPasswordToken = () =>
   Math.floor(100000 + Math.random() * 900000).toString();
 
+/**
+ * Generates a JSON Web Token (JWT) and sets it as a cookie on the response.
+ * The token is signed with the JWT_SECRET environment variable and expires in 7 days.
+ * The cookie is set with the following options:
+ *   - httpOnly: true (to prevent XSS attacks)
+ *   - secure: true (only on production environment, to use HTTPS)
+ *   - sameSite: "strict" (to prevent CSRF attacks)
+ *   - maxAge: 7 days (the duration of the cookie)
+ * @param {Response} res The response object to set the cookie on.
+ * @param {string} userId The user ID to sign the token with.
+ * @returns {string} The generated token.
+ */
 export const generateTokenAndSetCookie = (res, userId) => {
   const token = jwt.sign({ userId }, process.env.JWT_SECRET, {
     expiresIn: "7d",
