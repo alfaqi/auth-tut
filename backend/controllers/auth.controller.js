@@ -178,3 +178,45 @@ export const forgotPassword = async (req, res) => {
       .json({ success: false, message: "Error in forgot password" });
   }
 };
+
+export const resetPassword = async (req, res) => {
+  const { token } = req.params;
+  const { password } = req.body;
+  const hashedPassword = await bcrypt.hash(password, 12);
+
+  try {
+    const user = await User.findOneAndUpdate(
+      {
+        resetPasswordToken: token,
+        resetPasswordExpiresAt: { $gt: new Date() },
+      },
+      {
+        $set: { password: hashedPassword },
+        $unset: {
+          resetPasswordToken: "",
+          resetPasswordExpiresAt: "",
+        },
+      },
+      { new: true }
+    );
+
+    if (!user) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid or expired reset password session",
+      });
+    }
+
+    await sendResetPasswordSuccessEmail(user.email);
+
+    res.status(200).json({
+      success: true,
+      message: "Password reset successfully",
+    });
+  } catch (error) {
+    console.error("Error in reset password:", error);
+    res
+      .status(500)
+      .json({ success: false, message: "Error in reset password" });
+  }
+};
