@@ -15,6 +15,22 @@ import {
   sendResetPasswordSuccessEmail,
 } from "../resend/emails.js";
 
+export const checkAuth = async (req, res) => {
+  try {
+    const user = await User.findById(req.userId).select("-password");
+    if (!user) {
+      return res
+        .status(400)
+        .json({ success: false, message: "User not found" });
+    }
+
+    res.status(200).json({ success: true, data: user });
+  } catch (error) {
+    console.error("Error in checkAuth:", error);
+    res.status(500).json({ success: false, message: "Error in checkAuth" });
+  }
+};
+
 export const signup = async (req, res) => {
   try {
     const { name, email, password } = req.body;
