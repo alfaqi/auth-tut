@@ -8,7 +8,7 @@ export default [
     languageOptions: {
       ecmaVersion: "latest",
       sourceType: "module",
-      globals: globals.node, // ✅ Node.js globals like __dirname, process
+      globals: globals.node, // Node.js globals like __dirname, process
     },
     rules: {
       "no-unused-vars": "warn",
