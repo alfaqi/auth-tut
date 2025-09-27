@@ -211,7 +211,7 @@ export const resetPassword = async (req, res) => {
     if (!user) {
       return res.status(400).json({
         success: false,
-        message: "Invalid or expired reset password session",
+        message: "Invalid or expired reset password token",
       });
     }
 
@@ -227,4 +227,13 @@ export const resetPassword = async (req, res) => {
       .status(500)
       .json({ success: false, message: "Error in reset password" });
   }
+};
+
+export const welcome = async (req, res) => {
+  const { email, name } = req.body;
+  await sendWelcomeEmail(email, name);
+  res.status(200).json({
+    success: true,
+    message: "Sent welcome email successfully",
+  });
 };
