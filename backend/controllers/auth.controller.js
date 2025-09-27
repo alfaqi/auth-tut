@@ -69,8 +69,8 @@ export const verifyEmail = async (req, res) => {
       {
         $set: { isVerified: true },
         $unset: {
-          verificationCode: undefined,
-          verificationCodeExpiresAt: undefined,
+          verificationCode: "",
+          verificationCodeExpiresAt: "",
         },
       },
       { new: true }
@@ -94,7 +94,6 @@ export const verifyEmail = async (req, res) => {
           password: undefined,
         },
       },
-      token,
     });
   } catch (error) {
     console.error("Error verifying email:", error);
