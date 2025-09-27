@@ -5,7 +5,7 @@ import {
   generateTokenAndSetCookie,
   generateVerificationCode,
 } from "../utils/utils.js";
-import { sendVerificationEmail } from "../mailtrap/emails.js";
+import { sendVerificationEmail, sendWelcomeEmail } from "../mailtrap/emails.js";
 
 export const signup = async (req, res) => {
   try {
@@ -53,6 +53,38 @@ export const signup = async (req, res) => {
       },
       token,
     });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+export const verifyEmail = async (req, res) => {
+  const { code } = req.body;
+  try {
+    const user = await User.findOneAndUpdate(
+      {
+        verificationCode: code,
+        verificationCodeExpiresAt: { $gt: new Date() },
+      },
+      {
+        $set: { isVerified: true },
+        $unset: {
+          verificationCode: undefined,
+          verificationCodeExpiresAt: undefined,
+        },
+      },
+      { new: true }
+    );
+
+    if (!user) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid or expired verification code",
+      });
+    }
+
+    await sendWelcomeEmail(user.email, user.name);
+    res.status(200).json({ success: true, message: "Email verified" });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
