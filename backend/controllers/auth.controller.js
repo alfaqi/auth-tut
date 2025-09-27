@@ -97,7 +97,8 @@ export const verifyEmail = async (req, res) => {
       token,
     });
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    console.error("Error verifying email:", error);
+    res.status(500).json({ success: false, message: "Error verifying email" });
   }
 };
 
