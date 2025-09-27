@@ -6,8 +6,15 @@
   "author": "Abdullah Alfaqi",
   "type": "module",
   "main": "backend/index.js",
+  "workspaces": [
+    "backend",
+    "frontend"
+  ],
   "scripts": {
-    "dev": "nodemon backend/index.js"
+    "dev": "nodemon backend/index.js",
+    "lint": "eslint .",
+    "lint:backend": "eslint backend",
+    "lint:frontend": "eslint frontend"
   },
   "dependencies": {
     "bcryptjs": "^3.0.2",
@@ -21,6 +28,7 @@
     "resend": "^6.1.0"
   },
   "devDependencies": {
+    "eslint": "^9.36.0",
     "nodemon": "^3.1.10"
   }
 }
