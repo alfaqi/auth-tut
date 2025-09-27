@@ -13,7 +13,8 @@
   "scripts": {
     "dev": "nodemon backend/index.js",
     "lint": "eslint .",
-    "lint:backend": "eslint backend"
+    "lint:backend": "eslint backend",
+    "lint:frontend": "eslint frontend"
   },
   "dependencies": {
     "bcryptjs": "^3.0.2",
