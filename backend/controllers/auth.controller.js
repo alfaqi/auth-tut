@@ -145,3 +145,36 @@ export const logout = async (req, res) => {
   res.clearCookie("token");
   res.status(200).json({ success: true, message: "Logged out successfully" });
 };
+
+export const forgotPassword = async (req, res) => {
+  const { email } = req.body;
+
+  try {
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res
+        .status(400)
+        .json({ success: false, message: "User not found" });
+    }
+
+    const resetPasswordToken = crypto.randomBytes(24).toString("hex");
+    const resetPasswordExpiresAt = generateExpiryDate(60);
+
+    user.resetPasswordToken = resetPasswordToken;
+    user.resetPasswordExpiresAt = resetPasswordExpiresAt;
+    await user.save();
+
+    await sendResetPasswordEmail(user.email, resetPasswordToken);
+
+    res.status(200).json({
+      success: true,
+      message: "Password reset link sent to your email",
+    });
+  } catch (error) {
+    console.error("Error in forgot password:", error);
+    res
+      .status(500)
+      .json({ success: false, message: "Error in forgot password" });
+  }
+};
