@@ -13,7 +13,7 @@ import {
   sendResetPasswordEmail,
   sendWelcomeEmail,
   sendResetPasswordSuccessEmail,
-} from "../mailtrap/emails.js";
+} from "../resend/emails.js";
 
 export const signup = async (req, res) => {
   try {
