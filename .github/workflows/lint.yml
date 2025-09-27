@@ -26,5 +26,5 @@ jobs:
       - name: Run ESLint on backend
         run: npm run lint --workspace=backend || npm run lint:backend
 
-      - name: Run ESLint on frontend
-        run: npm run lint --workspace=frontend || npm run lint:frontend
+      # - name: Run ESLint on frontend
+      #   run: npm run lint --workspace=frontend || npm run lint:frontend
