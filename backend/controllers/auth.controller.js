@@ -1,12 +1,13 @@
 import bcrypt from "bcryptjs";
 import crypto from "crypto";
-
 import User from "../models/user.model.js";
 
 import {
   generateExpiryDate,
+  generateRefreshTokenAndSetCookie,
   generateTokenAndSetCookie,
   generateVerificationCode,
+  verifyJWTToken,
 } from "../utils/utils.js";
 import {
   sendVerificationEmail,
@@ -145,6 +146,7 @@ export const login = async (req, res) => {
     }
 
     generateTokenAndSetCookie(res, user._id);
+    generateRefreshTokenAndSetCookie(res, user._id);
 
     user.lastLogin = new Date();
     await user.save();
@@ -252,4 +254,28 @@ export const welcome = async (req, res) => {
     success: true,
     message: "Sent welcome email successfully",
   });
+};
+
+export const refreshAccessToken = (req, res) => {
+  const accessToken = req.cookies.token;
+  const refreshToken = req.cookies.refreshToken;
+  if (!accessToken) {
+    return res.status(401).json({ success: false, message: "User must login" })
+  }
+
+  if (!refreshToken) {
+    return res.status(401).json({ success: false, message: "Unauthorized" });
+  }
+
+  try {
+    const decoded = verifyJWTToken(refreshToken, process.env.JWT_REFRESH_SECRET);
+    const token = generateTokenAndSetCookie(res, decoded.userId);
+
+    res
+      .status(200)
+      .json({ success: true, message: "Access token refreshed", token });
+  } catch (error) {
+    console.error("Error in refreshAccessToken:", error);
+    res.status(500).json({ success: false, message: "Error in refreshAccessToken" });
+   }
 };
