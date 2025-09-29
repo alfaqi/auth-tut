@@ -41,6 +41,8 @@ export const magicLogin = async (req, res) => {
     res.cookie("refreshToken", refreshToken, { httpOnly: true, secure: true });
     res.json({ success: true, accessToken });
   } catch (err) {
-    res.status(400).json({ success: false, error: "Invalid or expired link" });
+    res
+      .status(400)
+      .json({ success: false, message: "Invalid or expired link" });
   }
 };
