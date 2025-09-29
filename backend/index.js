@@ -3,7 +3,8 @@ import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 import { connectDB } from "./db/connectDB.js";
-import authRoutes from "./routes/auth.route.js";
+import authRoutes from "./routes/auth.routes.js";
+import passwordlessRoutes from "./routes/passwordless.routes.js";
 
 const app = express();
 dotenv.config();
@@ -17,6 +18,7 @@ app.use(express.json()); // to parse json data from JSON payloads
 app.use(cookieParser()); // allows us to paser incoming cookies
 
 app.use("/api/auth", authRoutes);
+app.use("/api/login", passwordlessRoutes);
 
 app.listen(PORT, () => {
   connectDB();
