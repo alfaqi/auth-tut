@@ -1,4 +1,5 @@
 import {
+  MAGIC_LINK_TEMPLATE,
   PASSWORD_RESET_REQUEST_TEMPLATE,
   PASSWORD_RESET_SUCCESS_TEMPLATE,
   VERIFICATION_EMAIL_TEMPLATE,
@@ -86,6 +87,29 @@ export const sendResetPasswordSuccessEmail = async (email) => {
       subject: "Welcome again",
       html: PASSWORD_RESET_SUCCESS_TEMPLATE,
     });
+    if (error) {
+      throw new Error(error);
+    }
+
+    console.log("Email sent successfully", data);
+  } catch (error) {
+    console.error("Error sending password reset email:", error);
+    throw new Error(`Error sending password reset email: ${error}`);
+  }
+};
+
+export const sendMagicRequestEmail = async (email, magicToken) => {
+  const recipients = email;
+  try {
+    const magicURL = `${process.env.CLIENT_URL}/api/login/magic-login?token=${magicToken}`;
+
+    const { data, error } = await resend.emails.send({
+      from: sender,
+      to: recipients,
+      subject: "Magic Link Login",
+      html: MAGIC_LINK_TEMPLATE.replace("{magicURL}", magicURL),
+    });
+
     if (error) {
       throw new Error(error);
     }
