@@ -2,12 +2,12 @@ import {
   PASSWORD_RESET_REQUEST_TEMPLATE,
   PASSWORD_RESET_SUCCESS_TEMPLATE,
   VERIFICATION_EMAIL_TEMPLATE,
-} from "./emailTemplates.js";
-import { mailtrapClient, sender } from "./mailtrap.config.js";
+} from "./emailTemplates.ts";
+import { mailtrapClient, sender } from "./mailtrap.config.ts";
 import dotenv from "dotenv";
 dotenv.config();
 
-export const sendVerificationEmail = async (email, verficitionCode) => {
+export const sendVerificationEmail = async (email: string, verficitionCode: string): Promise<void> => {
   const recipients = [{ email }];
   try {
     const response = await mailtrapClient.send({
@@ -28,13 +28,13 @@ export const sendVerificationEmail = async (email, verficitionCode) => {
   }
 };
 
-export const sendWelcomeEmail = async (email, name) => {
+export const sendWelcomeEmail = async (email: string, name: string): Promise<void> => {
   const recipients = [{ email }];
   try {
     const response = await mailtrapClient.send({
       from: sender,
       to: recipients,
-      template_uuid: process.env.MAILTRAP_TEMPLATE_UUID,
+      template_uuid: process.env.MAILTRAP_TEMPLATE_UUID as string,
       template_variables: {
         company_info_name: "AUTH APP",
         name: name,
@@ -48,7 +48,7 @@ export const sendWelcomeEmail = async (email, name) => {
   }
 };
 
-export const sendResetPasswordEmail = async (email, resetPasswordToken) => {
+export const sendResetPasswordEmail = async (email: string, resetPasswordToken: string): Promise<void> => {
   const recipients = [{ email }];
   try {
     const resetURL = `${process.env.CLIENT_URL}/reset-password/${resetPasswordToken}`;
@@ -66,7 +66,7 @@ export const sendResetPasswordEmail = async (email, resetPasswordToken) => {
   }
 };
 
-export const sendResetPasswordSuccessEmail = async (email) => {
+export const sendResetPasswordSuccessEmail = async (email: string): Promise<void> => {
   const recipients = [{ email }];
   try {
     const response = await mailtrapClient.send({
