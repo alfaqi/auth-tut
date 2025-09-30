@@ -2,9 +2,9 @@ import express from "express";
 import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
 import cors from "cors";
-import { connectDB } from "./db/connectDB.js";
-import authRoutes from "./routes/auth.routes.js";
-import passwordlessRoutes from "./routes/passwordless.routes.js";
+import { connectDB } from "./db/connectDB.ts";
+import authRoutes from "./routes/auth.routes.ts";
+import passwordlessRoutes from "./routes/passwordless.routes.ts";
 
 const app = express();
 dotenv.config();

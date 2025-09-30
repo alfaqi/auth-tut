@@ -3,7 +3,7 @@ import express from "express";
 import {
   magicLogin,
   magicRequest,
-} from "../controllers/passwordless.controller.js";
+} from "../controllers/passwordless.controller.ts";
 
 const router = express.Router();
 

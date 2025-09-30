@@ -143,7 +143,7 @@ export const MAGIC_LINK_TEMPLATE = `
     <div style="text-align: center; margin: 30px 0;">
       <a href="{magicURL}" style="background-color: #4CAF50; color: white; padding: 12px 20px; text-decoration: none; border-radius: 5px; font-weight: bold;">Sign In</a>
     </div>
-    <p>This link will expire in 15 minutes for security reasons. If you didn’t request this link, you can safely ignore this email.</p>
+    <p>This link will expire in 15 minutes for security reasons. If you didn't request this link, you can safely ignore this email.</p>
     <p>Best regards,<br>Your App Team</p>
   </div>
   <div style="text-align: center; margin-top: 20px; color: #888; font-size: 0.8em;">

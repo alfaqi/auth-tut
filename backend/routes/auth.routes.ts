@@ -9,8 +9,8 @@ import {
   resetPassword,
   welcome,
   refreshAccessToken,
-} from "../controllers/auth.controller.js";
-import { verifyToken } from "../middleware/verifyToken.js";
+} from "../controllers/auth.controller.ts";
+import { verifyToken } from "../middleware/verifyToken.ts";
 
 const router = express.Router();
 

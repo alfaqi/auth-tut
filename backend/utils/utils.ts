@@ -1,11 +1,12 @@
 import jwt from "jsonwebtoken";
+import type { Response } from "express";
 
 /**
  * Generates a verification code as a string.
  * The code is a random number between 100000 and 999999.
  * @returns {string} The verification code.
  */
-export const generateVerificationCode = () =>
+export const generateVerificationCode = (): string =>
   Math.floor(100000 + Math.random() * 900000).toString();
 
 /**
@@ -14,7 +15,7 @@ export const generateVerificationCode = () =>
  * @param {number} [minutes=60] The number of minutes to add to the current time.
  * @returns {Date} The expiration date.
  */
-export const generateExpiryDate = (minutes = 60) =>
+export const generateExpiryDate = (minutes: number = 60): Date =>
   new Date(Date.now() + minutes * 60 * 1000);
 
 /**
@@ -22,7 +23,7 @@ export const generateExpiryDate = (minutes = 60) =>
  * The token is a random number between 100000 and 999999.
  * @returns {string} The reset password token.
  */
-export const generateResetPasswordToken = () =>
+export const generateResetPasswordToken = (): string =>
   Math.floor(100000 + Math.random() * 900000).toString();
 
 /**
@@ -33,10 +34,17 @@ export const generateResetPasswordToken = () =>
  * @param {string} [expiresIn=15m] The number of minutes until the token expires.
  * @returns {string} The access token.
  */
-export const generateAccessToken = (userId, expiresIn = "15m") => {
-  return jwt.sign({ userId }, process.env.JWT_SECRET, {
-    expiresIn: expiresIn,
-  });
+export const generateAccessToken = (
+  userId: string,
+  expiresIn: string = "15m"
+): string => {
+  return jwt.sign(
+    { userId },
+    process.env.JWT_SECRET as string,
+    {
+      expiresIn: expiresIn,
+    } as jwt.SignOptions
+  );
 };
 
 /**
@@ -47,26 +55,41 @@ export const generateAccessToken = (userId, expiresIn = "15m") => {
  * @param {string} [expiresIn=7d] The number of minutes until the token expires.
  * @returns {string} The refresh token.
  */
-export const generateRefreshToken = (userId, expiresIn = "7d") => {
-  return jwt.sign({ userId }, process.env.JWT_REFRESH_SECRET, {
-    expiresIn: expiresIn,
-  });
+export const generateRefreshToken = (
+  userId: string,
+  expiresIn: string = "7d"
+): string => {
+  return jwt.sign(
+    { userId },
+    process.env.JWT_REFRESH_SECRET as string,
+    {
+      expiresIn: expiresIn,
+    } as jwt.SignOptions
+  );
 };
 
-export const generateTokenAndSetCookie = (res, userId, expiresIn) => {
+export const generateTokenAndSetCookie = (
+  res: Response,
+  userId: string,
+  expiresIn?: string
+): string => {
   const token = generateAccessToken(userId, expiresIn);
 
   res.cookie("token", token, {
     httpOnly: true, // Prevent XSS attacks
     secure: process.env.NODE_ENV === "production", // in dev we use HTTP, but in production we use HTTPS, turn off the https on dev env
     sameSite: "strict", // Prevents an attack called CSRF
-    maxAge: 15 * 60 * 1000, // 7 days
+    maxAge: 15 * 60 * 1000, // 15 minutes
   });
 
   return token;
 };
 
-export const generateRefreshTokenAndSetCookie = (res, userId, expiresIn) => {
+export const generateRefreshTokenAndSetCookie = (
+  res: Response,
+  userId: string,
+  expiresIn?: string
+): string => {
   const refreshToken = generateRefreshToken(userId, expiresIn);
 
   res.cookie("refreshToken", refreshToken, {
@@ -83,9 +106,9 @@ export const generateRefreshTokenAndSetCookie = (res, userId, expiresIn) => {
  * Verifies a JSON Web Token (JWT) with the given secret.
  * @param {string} token The JWT to verify.
  * @param {string} secret The secret to use for verification.
- * @returns {Promise<object>} The decoded token if verification is successful.
+ * @returns {object} The decoded token if verification is successful.
  * @throws {Error} If the token is invalid or has expired.
  */
-export const verifyJWTToken = (token, secret) => {
+export const verifyJWTToken = (token: string, secret: string): any => {
   return jwt.verify(token, secret);
-}
+};

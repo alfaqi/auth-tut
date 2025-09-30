@@ -4,13 +4,13 @@ import {
   PASSWORD_RESET_SUCCESS_TEMPLATE,
   VERIFICATION_EMAIL_TEMPLATE,
   WELCOME_EMAIL_TEMPLATE,
-} from "../mailtrap/emailTemplates.js";
+} from "../mailtrap/emailTemplates.ts";
 
-import { resend, sender } from "./config.resend.js";
+import { resend, sender } from "./config.resend.ts";
 import dotenv from "dotenv";
 dotenv.config();
 
-export const sendVerificationEmail = async (email, verficitionCode) => {
+export const sendVerificationEmail = async (email: string, verficitionCode: string): Promise<void> => {
   const recipients = email;
   try {
     const { data, error } = await resend.emails.send({
@@ -24,7 +24,7 @@ export const sendVerificationEmail = async (email, verficitionCode) => {
     });
 
     if (error) {
-      throw new Error(error);
+      throw new Error(JSON.stringify(error));
     }
 
     console.log("Email sent successfully", data);
@@ -34,7 +34,7 @@ export const sendVerificationEmail = async (email, verficitionCode) => {
   }
 };
 
-export const sendWelcomeEmail = async (email, name) => {
+export const sendWelcomeEmail = async (email: string, name: string): Promise<void> => {
   const recipients = email;
   try {
     const { data, error } = await resend.emails.send({
@@ -45,7 +45,7 @@ export const sendWelcomeEmail = async (email, name) => {
     });
 
     if (error) {
-      throw new Error(error);
+      throw new Error(JSON.stringify(error));
     }
 
     console.log("Email sent successfully", data);
@@ -55,7 +55,7 @@ export const sendWelcomeEmail = async (email, name) => {
   }
 };
 
-export const sendResetPasswordEmail = async (email, resetPasswordToken) => {
+export const sendResetPasswordEmail = async (email: string, resetPasswordToken: string): Promise<void> => {
   const recipients = email;
   try {
     const resetURL = `${process.env.CLIENT_URL}/reset-password/${resetPasswordToken}`;
@@ -68,7 +68,7 @@ export const sendResetPasswordEmail = async (email, resetPasswordToken) => {
     });
 
     if (error) {
-      throw new Error(error);
+      throw new Error(JSON.stringify(error));
     }
 
     console.log("Email sent successfully", data);
@@ -78,7 +78,7 @@ export const sendResetPasswordEmail = async (email, resetPasswordToken) => {
   }
 };
 
-export const sendResetPasswordSuccessEmail = async (email) => {
+export const sendResetPasswordSuccessEmail = async (email: string): Promise<void> => {
   const recipients = email;
   try {
     const { data, error } = await resend.emails.send({
@@ -88,7 +88,7 @@ export const sendResetPasswordSuccessEmail = async (email) => {
       html: PASSWORD_RESET_SUCCESS_TEMPLATE,
     });
     if (error) {
-      throw new Error(error);
+      throw new Error(JSON.stringify(error));
     }
 
     console.log("Email sent successfully", data);
@@ -98,7 +98,7 @@ export const sendResetPasswordSuccessEmail = async (email) => {
   }
 };
 
-export const sendMagicRequestEmail = async (email, magicToken) => {
+export const sendMagicRequestEmail = async (email: string, magicToken: string): Promise<void> => {
   const recipients = email;
   try {
     const magicURL = `${process.env.CLIENT_URL}/api/login/magic-login?token=${magicToken}`;
@@ -111,7 +111,7 @@ export const sendMagicRequestEmail = async (email, magicToken) => {
     });
 
     if (error) {
-      throw new Error(error);
+      throw new Error(JSON.stringify(error));
     }
 
     console.log("Email sent successfully", data);
