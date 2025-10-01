@@ -2,11 +2,10 @@ import jwt from "jsonwebtoken";
 import type { Response } from "express";
 
 /**
- * Generates a verification code as a string.
- * The code is a random number between 100000 and 999999.
- * @returns {string} The verification code.
+ * Generates a 6-digit code using a random number between 100000 and 999999.
+ * @returns {string} A 6-digit code as a string.
  */
-export const generateVerificationCode = (): string =>
+export const generateCode = (): string =>
   Math.floor(100000 + Math.random() * 900000).toString();
 
 /**
@@ -17,14 +16,6 @@ export const generateVerificationCode = (): string =>
  */
 export const generateExpiryDate = (minutes: number = 60): Date =>
   new Date(Date.now() + minutes * 60 * 1000);
-
-/**
- * Generates a reset password token as a string.
- * The token is a random number between 100000 and 999999.
- * @returns {string} The reset password token.
- */
-export const generateResetPasswordToken = (): string =>
-  Math.floor(100000 + Math.random() * 900000).toString();
 
 /**
  * Generates a JSON Web Token (JWT) representing the user's access token.
@@ -73,16 +64,16 @@ export const generateTokenAndSetCookie = (
   userId: string,
   expiresIn?: string
 ): string => {
-  const token = generateAccessToken(userId, expiresIn);
+  const accessToken = generateAccessToken(userId, expiresIn);
 
-  res.cookie("token", token, {
+  res.cookie("accessToken", accessToken, {
     httpOnly: true, // Prevent XSS attacks
     secure: process.env.NODE_ENV === "production", // in dev we use HTTP, but in production we use HTTPS, turn off the https on dev env
     sameSite: "strict", // Prevents an attack called CSRF
     maxAge: 15 * 60 * 1000, // 15 minutes
   });
 
-  return token;
+  return accessToken;
 };
 
 export const generateRefreshTokenAndSetCookie = (
@@ -103,12 +94,17 @@ export const generateRefreshTokenAndSetCookie = (
 };
 
 /**
- * Verifies a JSON Web Token (JWT) with the given secret.
+ * Verifies a JSON Web Token (JWT) by checking if it is valid
+ * and not expired.
  * @param {string} token The JWT to verify.
  * @param {string} secret The secret to use for verification.
- * @returns {object} The decoded token if verification is successful.
- * @throws {Error} If the token is invalid or has expired.
+ * @param {jwt.VerifyOptions} [options] Optional options for verification.
+ * @returns {any} The decoded JWT payload if the token is valid, otherwise throws an error.
  */
-export const verifyJWTToken = (token: string, secret: string): any => {
-  return jwt.verify(token, secret);
+export const verifyJWTToken = (
+  token: string,
+  secret: string,
+  options?: jwt.VerifyOptions
+): any => {
+  return jwt.verify(token, secret, options);
 };
