@@ -2,13 +2,12 @@ import type { Request, Response } from "express";
 import bcrypt from "bcryptjs";
 import crypto from "crypto";
 import User from "../models/user.model.ts";
-import type { IUser } from "../models/user.model.ts";
 
 import {
   generateExpiryDate,
   generateRefreshTokenAndSetCookie,
   generateTokenAndSetCookie,
-  generateVerificationCode,
+  generateCode,
   verifyJWTToken,
 } from "../utils/utils.ts";
 import {
@@ -53,7 +52,7 @@ export const signup = async (req: Request, res: Response): Promise<void> => {
     }
 
     const hashedPassword = await bcrypt.hash(password, 12);
-    const verificationCode = generateVerificationCode();
+    const verificationCode = generateCode();
     const verificationCodeExpiresAt = generateExpiryDate(60);
 
     const user = await User.create({
