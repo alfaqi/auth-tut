@@ -19,17 +19,31 @@ export const verifyToken = (
   res: Response,
   next: NextFunction
 ): void => {
-  const token = req.cookies.token;
-  if (!token) {
-    res.status(401).json({
-      success: false,
-      message: "Unauthorized - no token provided",
-    });
-    return;
-  }
-
   try {
-    const decoded = verifyJWTToken(token, process.env.JWT_SECRET as string);
+    // 1. Try from cookie
+    let token = req.cookies?.accessToken;
+
+    // 2. If not found, try from Authorization header
+    if (!token && req.headers.authorization) {
+      const authHeader = req.headers.authorization;
+      if (authHeader.startsWith("Bearer ")) {
+        token = authHeader.split(" ")[1];
+      }
+    }
+
+    if (!token) {
+      res.status(401).json({
+        success: false,
+        message: "Unauthorized - no token provided",
+      });
+      return;
+    }
+
+    // 3. Verify JWT
+    const decoded = verifyJWTToken(token, process.env.JWT_SECRET as string) as {
+      userId: string;
+    };
+
     if (!decoded) {
       res.status(401).json({
         success: false,
@@ -37,6 +51,8 @@ export const verifyToken = (
       });
       return;
     }
+
+    // 4. Attach user ID
     req.userId = decoded.userId;
     next();
   } catch (error) {
