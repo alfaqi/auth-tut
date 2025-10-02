@@ -2,13 +2,12 @@ import type { Request, Response } from "express";
 import bcrypt from "bcryptjs";
 import crypto from "crypto";
 import User from "../models/user.model.ts";
-import type { IUser } from "../models/user.model.ts";
 
 import {
   generateExpiryDate,
   generateRefreshTokenAndSetCookie,
   generateTokenAndSetCookie,
-  generateVerificationCode,
+  generateCode,
   verifyJWTToken,
 } from "../utils/utils.ts";
 import {
@@ -22,7 +21,10 @@ interface AuthRequest extends Request {
   userId?: string;
 }
 
-export const checkAuth = async (req: AuthRequest, res: Response): Promise<void> => {
+export const checkAuth = async (
+  req: AuthRequest,
+  res: Response
+): Promise<void> => {
   try {
     const user = await User.findById(req.userId).select("-password");
     if (!user) {
@@ -42,7 +44,9 @@ export const signup = async (req: Request, res: Response): Promise<void> => {
     const { name, email, password } = req.body;
     console.log(req.body);
     if (!name || !email || !password) {
-      res.status(400).json({ success: false, message: "All fields are required" });
+      res
+        .status(400)
+        .json({ success: false, message: "All fields are required" });
       return;
     }
 
@@ -53,7 +57,7 @@ export const signup = async (req: Request, res: Response): Promise<void> => {
     }
 
     const hashedPassword = await bcrypt.hash(password, 12);
-    const verificationCode = generateVerificationCode();
+    const verificationCode = generateCode();
     const verificationCodeExpiresAt = generateExpiryDate(60);
 
     const user = await User.create({
@@ -86,7 +90,10 @@ export const signup = async (req: Request, res: Response): Promise<void> => {
   }
 };
 
-export const verifyEmail = async (req: Request, res: Response): Promise<void> => {
+export const verifyEmail = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
   const { code } = req.body;
   try {
     const user = await User.findOneAndUpdate(
@@ -147,8 +154,11 @@ export const login = async (req: Request, res: Response): Promise<void> => {
       return;
     }
 
-    generateTokenAndSetCookie(res, user._id.toString());
-    generateRefreshTokenAndSetCookie(res, user._id.toString());
+    const accessToken = generateTokenAndSetCookie(res, user._id.toString());
+    const refreshToken = generateRefreshTokenAndSetCookie(
+      res,
+      user._id.toString()
+    );
 
     user.lastLogin = new Date();
     await user.save();
@@ -162,6 +172,8 @@ export const login = async (req: Request, res: Response): Promise<void> => {
           password: undefined,
         },
       },
+      accessToken,
+      refreshToken,
     });
   } catch (error) {
     console.error("Error in login:", error);
@@ -170,11 +182,14 @@ export const login = async (req: Request, res: Response): Promise<void> => {
 };
 
 export const logout = async (req: Request, res: Response): Promise<void> => {
-  res.clearCookie("token");
+  res.clearCookie("accessToken");
   res.status(200).json({ success: true, message: "Logged out successfully" });
 };
 
-export const forgotPassword = async (req: Request, res: Response): Promise<void> => {
+export const forgotPassword = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
   const { email } = req.body;
 
   try {
@@ -200,11 +215,16 @@ export const forgotPassword = async (req: Request, res: Response): Promise<void>
     });
   } catch (error) {
     console.error("Error in forgot password:", error);
-    res.status(500).json({ success: false, message: "Error in forgot password" });
+    res
+      .status(500)
+      .json({ success: false, message: "Error in forgot password" });
   }
 };
 
-export const resetPassword = async (req: Request, res: Response): Promise<void> => {
+export const resetPassword = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
   const { token } = req.params;
   const { password } = req.body;
   const hashedPassword = await bcrypt.hash(password, 12);
@@ -241,7 +261,9 @@ export const resetPassword = async (req: Request, res: Response): Promise<void> 
     });
   } catch (error) {
     console.error("Error in reset password:", error);
-    res.status(500).json({ success: false, message: "Error in reset password" });
+    res
+      .status(500)
+      .json({ success: false, message: "Error in reset password" });
   }
 };
 
@@ -268,12 +290,19 @@ export const refreshAccessToken = (req: Request, res: Response): void => {
   }
 
   try {
-    const decoded = verifyJWTToken(refreshToken, process.env.JWT_REFRESH_SECRET as string);
+    const decoded = verifyJWTToken(
+      refreshToken,
+      process.env.JWT_REFRESH_SECRET as string
+    );
     const token = generateTokenAndSetCookie(res, decoded.userId);
 
-    res.status(200).json({ success: true, message: "Access token refreshed", token });
+    res
+      .status(200)
+      .json({ success: true, message: "Access token refreshed", token });
   } catch (error) {
     console.error("Error in refreshAccessToken:", error);
-    res.status(500).json({ success: false, message: "Error in refreshAccessToken" });
+    res
+      .status(500)
+      .json({ success: false, message: "Error in refreshAccessToken" });
   }
 };
