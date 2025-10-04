@@ -59,6 +59,20 @@ export const generateRefreshToken = (
   );
 };
 
+/**
+ * Generates an access token and sets it as a cookie on the response.
+ * The access token is a JSON Web Token (JWT) signed with the JWT_SECRET environment variable.
+ * The token contains the user's ID and expires in the given number of minutes.
+ * The cookie is set with the following options:
+ * - httpOnly: true (prevents XSS attacks)
+ * - secure: true (in production) or false (in development)
+ * - sameSite: "strict" (prevents CSRF attacks)
+ * - maxAge: 15 minutes
+ * @param {Response} res - The response object.
+ * @param {string} userId - The user's ID.
+ * @param {string} [expiresIn=15m] - The number of minutes until the token expires.
+ * @returns {string} The access token.
+ */
 export const generateTokenAndSetCookie = (
   res: Response,
   userId: string,
@@ -76,6 +90,17 @@ export const generateTokenAndSetCookie = (
   return accessToken;
 };
 
+/**
+ * Generates a refresh token and sets it as a cookie on the response.
+ * The refresh token is a JSON Web Token (JWT) signed with the JWT_REFRESH_SECRET environment variable.
+ * The token contains the user's ID and expires in the given number of minutes.
+ * The cookie is set with the following options:
+ * - httpOnly: true (prevents XSS attacks)
+ * - secure: true (in production) or false (in development)
+ * - sameSite: "strict" (prevents CSRF attacks)
+ * - maxAge: 7 days
+ * @returns {string} The refresh token.
+ */
 export const generateRefreshTokenAndSetCookie = (
   res: Response,
   userId: string,
