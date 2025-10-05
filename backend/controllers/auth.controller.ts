@@ -293,16 +293,22 @@ export const refreshAccessToken = (req: Request, res: Response): void => {
     const decoded = verifyJWTToken(
       refreshToken,
       process.env.JWT_REFRESH_SECRET as string
-    );
+    ) as { userId?: string } | null;
+
+    if (!decoded || !decoded.userId) {
+      res.status(401).json({ success: false, message: "Unauthorized" });
+      return;
+    }
+
     const token = generateTokenAndSetCookie(res, decoded.userId);
 
     res
       .status(200)
       .json({ success: true, message: "Access token refreshed", token });
   } catch (error) {
-    console.error("Error in refreshAccessToken:", error);
+    console.error("Error while refreshing access token:", error);
     res
       .status(500)
-      .json({ success: false, message: "Error in refreshAccessToken" });
+      .json({ success: false, message: "Error while refreshing access token" });
   }
 };
