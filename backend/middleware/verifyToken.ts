@@ -7,6 +7,8 @@ interface AuthRequest extends Request {
   userId?: string;
 }
 
+const JWT_SECRET = process.env.JWT_SECRET as string;
+
 /**
  * Verify token middleware.
  * Verifies the token provided in the cookies.
@@ -40,9 +42,7 @@ export const verifyToken = (
     }
 
     // 3. Verify JWT
-    const decoded = verifyJWTToken(token, process.env.JWT_SECRET as string) as {
-      userId: string;
-    };
+    const decoded = verifyJWTToken(token, JWT_SECRET) as { userId: string };
 
     if (!decoded) {
       res.status(401).json({
