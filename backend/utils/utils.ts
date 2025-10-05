@@ -119,17 +119,30 @@ export const generateRefreshTokenAndSetCookie = (
 };
 
 /**
- * Verifies a JSON Web Token (JWT) by checking if it is valid
- * and not expired.
+ * Verifies a JSON Web Token (JWT) by checking if it is valid and not expired.
+ * Returns null instead of throwing on any error (invalid token, expired, bad inputs, etc.).
  * @param {string} token The JWT to verify.
  * @param {string} secret The secret to use for verification.
  * @param {jwt.VerifyOptions} [options] Optional options for verification.
- * @returns {any} The decoded JWT payload if the token is valid, otherwise throws an error.
+ * @returns {any | null} The decoded JWT payload if valid; otherwise null.
  */
 export const verifyJWTToken = (
   token: string,
   secret: string,
   options?: jwt.VerifyOptions
-): any => {
-  return jwt.verify(token, secret, options);
+): any | null => {
+  // Basic input validation
+  if (!token || typeof token !== "string") {
+    return null;
+  }
+  if (!secret || typeof secret !== "string") {
+    return null;
+  }
+
+  try {
+    return jwt.verify(token, secret, options);
+  } catch (_error) {
+    // Swallow verification errors and return null for robustness
+    return null;
+  }
 };
