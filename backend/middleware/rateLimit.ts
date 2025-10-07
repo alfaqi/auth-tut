@@ -1,4 +1,5 @@
-import { rateLimit, Options } from "express-rate-limit";
+import { rateLimit } from "express-rate-limit";
+import type { Options } from "express-rate-limit";
 
 const createRateLimiter = (options?: Partial<Options>) =>
   rateLimit({
